@@ -88,5 +88,13 @@ namespace CleanArch.Infra.Repositories
                           cancellationToken);
         }
 
+        public async Task<IEnumerable<Vacation>> GetByStatusAsync(VacationStatus status)
+        {
+            return await _context.Vacations
+                .Include(v => v.User)
+                .ThenInclude(u => u.Department)
+                .Where(v => v.Status == status)
+                .ToListAsync();
+        }
     }
 }

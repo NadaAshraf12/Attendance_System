@@ -2,14 +2,16 @@
 using CleanArch.App.Features.Vacation.Command.CreateVacation;
 using CleanArch.App.Features.Vacation.Command.DeclineVacation;
 using CleanArch.App.Features.Vacation.Command.DeleteVacation;
+using CleanArch.App.Features.Vacation.Command.ReviewVacationRequest;
 using CleanArch.App.Features.Vacation.Command.UpdateVacation;
 using CleanArch.App.Features.Vacation.Commands.UpdateVacationEndDate;
-using CleanArch.App.Features.Vacation.Query.GetPendingVacations;
 using CleanArch.App.Features.Vacation.Query.GetUserVacations;
 using CleanArch.App.Features.Vacation.Query.GetVacationById;
+using CleanArch.App.Features.Vacation.Query.GetVacationsByStatus;
 using CleanArch.App.Features.Vacation.Query.GetVacationStatistics;
 using CleanArch.App.Interface;
 using CleanArch.App.Services;
+using CleanArch.Common.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,17 +88,15 @@ namespace CleanArch.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("pending")]
+        [HttpGet("by-status")]
         [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> GetPendingVacations()
+        public async Task<IActionResult> GetVacationsByStatus([FromQuery] VacationStatus status)
         {
-            if (!Guid.TryParse(_currentUserService.UserId, out Guid managerId))
-            {
-                return BadRequest(ResponseModel.Fail("Invalid user ID", 400));
-            }
+            var result = await _mediator.Send(new GetVacationsByStatusQuery(status));
 
-            var query = new GetPendingVacationsQuery(managerId);
-            var result = await _mediator.Send(query);
+            if (result.IsError)
+                return BadRequest(result);
+
             return Ok(result);
         }
 
@@ -114,33 +114,42 @@ namespace CleanArch.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("approve/{vacationId}")]
-        [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> ApproveVacation(string vacationId) 
-        {
-            if (!Guid.TryParse(vacationId, out Guid vacId) || !Guid.TryParse(_currentUserService.UserId, out Guid approverId))
-            {
-                return BadRequest(ResponseModel.Fail("Invalid ID", 400));
-            }
+        //[HttpPut("approve/{vacationId}")]
+        //[Authorize(Roles = "Manager,Admin")]
+        //public async Task<IActionResult> ApproveVacation(string vacationId) 
+        //{
+        //    if (!Guid.TryParse(vacationId, out Guid vacId) || !Guid.TryParse(_currentUserService.UserId, out Guid approverId))
+        //    {
+        //        return BadRequest(ResponseModel.Fail("Invalid ID", 400));
+        //    }
 
-            var command = new ApproveVacationCommand(vacId, approverId);
-            var result = await _mediator.Send(command);
-            return Ok(result);
+        //    var command = new ApproveVacationCommand(vacId, approverId);
+        //    var result = await _mediator.Send(command);
+        //    return Ok(result);
+        //}
+
+        //[HttpPut("decline/{vacationId}")]
+        //[Authorize(Roles = "Manager,Admin")]
+        //public async Task<IActionResult> DeclineVacation(string vacationId, [FromBody] string? reason = null) 
+        //{
+        //    if (!Guid.TryParse(vacationId, out Guid vacId) || !Guid.TryParse(_currentUserService.UserId, out Guid approverId))
+        //    {
+        //        return BadRequest(ResponseModel.Fail("Invalid ID", 400));
+        //    }
+
+        //    var command = new DeclineVacationCommand(vacId, approverId, reason);
+        //    var result = await _mediator.Send(command);
+        //    return Ok(result);
+        //}
+
+        [HttpPost("review")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> ReviewVacation([FromBody] ReviewVacationRequestCommand command)
+        {
+            var response = await _mediator.Send(command);
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPut("decline/{vacationId}")]
-        [Authorize(Roles = "Manager,Admin")]
-        public async Task<IActionResult> DeclineVacation(string vacationId, [FromBody] string? reason = null) 
-        {
-            if (!Guid.TryParse(vacationId, out Guid vacId) || !Guid.TryParse(_currentUserService.UserId, out Guid approverId))
-            {
-                return BadRequest(ResponseModel.Fail("Invalid ID", 400));
-            }
-
-            var command = new DeclineVacationCommand(vacId, approverId, reason);
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
 
         [HttpPut("{vacationId}")]
         [Authorize]

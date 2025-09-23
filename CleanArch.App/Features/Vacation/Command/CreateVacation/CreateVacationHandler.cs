@@ -29,6 +29,11 @@ namespace CleanArch.App.Features.Vacation.Command.CreateVacation
                     return ResponseModel.Fail("End date must be after start date", 400);
                 }
 
+                if (!Enum.IsDefined(typeof(VacationType), request.Type))
+                {
+                    return ResponseModel.Fail("Invalid vacation type", 400);
+                }
+
                 var vacation = new Domain.Entities.Vacation
                 {
                     Id = Guid.NewGuid(),
@@ -43,6 +48,8 @@ namespace CleanArch.App.Features.Vacation.Command.CreateVacation
                     CreatedOn = DateTime.UtcNow
                 };
 
+
+
                 var result = await _vacationRepository.AddAsync(vacation);
 
                 return ResponseModel.Success("Vacation request created successfully", result);
@@ -52,5 +59,7 @@ namespace CleanArch.App.Features.Vacation.Command.CreateVacation
                 return ResponseModel.Fail($"Error creating vacation: {ex.Message}");
             }
         }
+    
+    
     }
 }

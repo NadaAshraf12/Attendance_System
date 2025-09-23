@@ -1,4 +1,5 @@
-﻿using CleanArch.Domain.Entities;
+﻿using CleanArch.Common.Enums;
+using CleanArch.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,9 @@ namespace CleanArch.Domain.Repositories
         Task DeleteAsync(Vacation vacation);
 
         Task<bool> HasVacationOnDateAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
+
+        Task<IEnumerable<Vacation>> GetByStatusAsync(VacationStatus status);
+
 
     }
 
