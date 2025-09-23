@@ -1,0 +1,5 @@
+{
+  "UserAlreadyExists": "User with this email already exists.",
+  "UserCreationFailed": "Failed to create user. Please check the provided data.",
+  "UserRegistered": "User registered successfully."
+}
