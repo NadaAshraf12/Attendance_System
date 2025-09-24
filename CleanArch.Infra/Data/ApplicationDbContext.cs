@@ -190,5 +190,9 @@ namespace CleanArch.Infra.Data
                 }
             }
         }
+
+        protected ApplicationDbContext() : base()
+        {
+        }
     }
 }

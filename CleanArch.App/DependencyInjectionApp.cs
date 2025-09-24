@@ -32,6 +32,8 @@ namespace CleanArch.App
             services.AddScoped<IEmailService, EmailService>();
             services.Configure<UploadOptions>(configuration.GetSection("UploadOptions"));
             services.AddScoped<IFileStorage, LocalFileStorage>();
+            services.AddScoped<ILocationService, LocationService>();
+
 
             var config = TypeAdapterConfig.GlobalSettings;
             config.Scan(typeof(UserMappingConfig).Assembly);

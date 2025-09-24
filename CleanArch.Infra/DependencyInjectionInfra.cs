@@ -4,6 +4,7 @@ using CleanArch.Domain.Repositories.Command.Base;
 using CleanArch.Domain.Repositories.Query.Base;
 using CleanArch.Infra.Data;
 using CleanArch.Infra.Identity;
+using CleanArch.Infra.Options;
 using CleanArch.Infra.Repositories;
 using CleanArch.Infra.Repositories.Command;
 using CleanArch.Infra.Repositories.Command.Base;
@@ -39,6 +40,9 @@ namespace CleanArch.Infra
             services.AddScoped<ILeaveRepository, LeaveRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IVacationRepository, VacationRepository>();
+
+            services.Configure<CompanyLocationOptions>(
+                configuration.GetSection(CompanyLocationOptions.SectionName));
 
 
             // Configure Lockout options
