@@ -1,20 +1,21 @@
-# CleanArch - Employee Management System
+# CleanArch - Employee Management System with GPS Location Tracking
 
-A clean architecture-based ASP.NET Core 9.0 web API for comprehensive employee management with attendance tracking, vacation management, and department organization.
+A clean architecture-based ASP.NET Core 9.0 web API for comprehensive employee management with advanced GPS-based attendance tracking, vacation management, and department organization.
 
 ## 📋 Application Description
 
-**CleanArch** is a robust backend system designed for managing employees, departments, attendance, and vacation requests. The application follows Clean Architecture principles with clear separation of concerns across different layers.
+**CleanArch** is a robust backend system designed for managing employees, departments, attendance with GPS validation, and vacation requests. The application follows Clean Architecture principles with clear separation of concerns across different layers.
 
 ### 🎯 Key Features
 
 - **User Authentication & Authorization** - JWT-based authentication with role management
 - **Employee Management** - Complete CRUD operations for employee profiles
 - **Department Management** - Hierarchical department structure with user assignment
-- **Attendance Tracking** - Check-in/check-out system with leave requests
+- **📍 GPS-Based Attendance Tracking** - Check-in/check-out system with location validation
 - **Vacation Management** - Vacation request submission, approval, and tracking
 - **Multi-language Support** - Arabic and English localization
 - **File Upload** - Profile image management with local storage
+- **📍 Real-time Location Validation** - Ensure employees are within company premises
 
 ### 🏗️ Architecture Layers
 
@@ -40,20 +41,27 @@ A clean architecture-based ASP.NET Core 9.0 web API for comprehensive employee m
    cd "New folder"
    ```
 
-2. **Update Connection String**
+2. **Update Connection String and Company Location**
    - Open `CleanArch.Api/appsettings.json`
-   - Modify the `ConnectionStrings.DefaultConnection` to match your SQL Server instance:
+   - Modify the connection string and company location settings:
    ```json
    "ConnectionStrings": {
      "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=CleanArchDb;Trusted_Connection=true;MultipleActiveResultSets=true"
+   },
+   "CompanyLocation": {
+     "Latitude": 30.0444,
+     "Longitude": 31.2357,
+     "AllowedRadiusInMeters": 500,
+     "CompanyName": "Your Company Name",
+     "Address": "Company Address Here"
    }
    ```
 
 3. **Recreate Database Migration**
    ```bash
    # Delete existing migration files from CleanArch.Infra/Migrations/ folder
-   # Then create new migration
-   dotnet ef migrations add "InitialCreate" --project CleanArch.Infra --startup-project CleanArch.Api
+   # Then create new migration with location tracking
+   dotnet ef migrations add "AddLocationTrackingToAttendance" --project CleanArch.Infra --startup-project CleanArch.Api
    
    # Update database
    dotnet ef database update --project CleanArch.Infra --startup-project CleanArch.Api
@@ -71,10 +79,10 @@ A clean architecture-based ASP.NET Core 9.0 web API for comprehensive employee m
 ```
 CleanArch/
 ├── CleanArch.Api/          # Web API layer (Controllers, Program.cs)
-├── CleanArch.App/          # Application layer (Features, Services)
-├── CleanArch.Domain/       # Domain layer (Entities, Interfaces)
+├── CleanArch.App/          # Application layer (Features, Services, Location Validation)
+├── CleanArch.Domain/       # Domain layer (Entities with GPS fields, Interfaces)
 ├── CleanArch.Infra/        # Infrastructure layer (Data, Repositories)
-└── CleanArch.Common/       # Shared components (DTOs, Enums)
+└── CleanArch.Common/       # Shared components (DTOs, Enums, Location Models)
 ```
 
 ## 🔧 Key Technologies Used
@@ -87,13 +95,14 @@ CleanArch/
 - **JWT Bearer Authentication** - Secure API access
 - **Serilog** - Structured logging
 - **Localization** - Multi-language support (Arabic/English)
+- **📍 GPS Location Services** - Haversine formula for distance calculation
 
 ## 🗄️ Database Schema
 
 The system includes entities for:
 - **Users** (ApplicationUser with Identity)
 - **Departments** (Hierarchical structure)
-- **AttendanceRecords** (Check-in/check-out tracking)
+- **📍 AttendanceRecords** (Check-in/check-out tracking with GPS coordinates)
 - **Vacations** (Leave management)
 - **LeaveRequests** (Absence tracking)
 
@@ -106,16 +115,60 @@ The API uses JWT tokens with role-based access control. Supported roles include:
 
 ## 📚 API Endpoints
 
+### 🔐 Authentication
 - `POST /api/auth/login` - User authentication
 - `POST /api/auth/register` - User registration
+
+### 👥 User Management
 - `GET /api/users` - User management
+- `PUT /api/users/profile` - Update user profile
+
+### 🏢 Department Operations
 - `GET /api/departments` - Department operations
-- `POST /api/attendance/checkin` - Attendance tracking
-- `GET /api/vacations` - Vacation management
+- `POST /api/departments` - Create department
+
+### 📍 Attendance Tracking (New GPS Features)
+- `POST /api/attendance/checkin` - Check-in with GPS location validation
+- `POST /api/attendance/checkout` - Check-out with location tracking
+- `GET /api/attendance/today` - Get today's attendance record
+- `GET /api/attendance/history` - Attendance history with location data
+
+### 🏖️ Vacation Management
+- `POST /api/vacations` - Submit vacation request
+- `GET /api/vacations` - Get user vacations
+- `PUT /api/vacations/{id}/approve` - Approve/reject vacation (Admin/Manager)
+
+### 📋 Leave Management
+- `POST /api/attendance/leave-request` - Submit leave request
+- `GET /api/attendance/pending-leaves` - Get pending leaves (Admin/Manager)
 
 ## 🌐 Localization
 
 The application supports both English (en-US) and Arabic (ar-EG) languages through resource files located in `CleanArch.Api/Resources/`.
+
+## 📍 GPS Location Features
+
+### Location Validation
+- **Real-time GPS tracking** during check-in/check-out
+- **Configurable radius** (default: 500 meters)
+- **Haversine formula** for accurate distance calculation
+- **Flexible location settings** per company branch
+
+### Location Storage
+- **Check-in/check-out coordinates** stored for auditing
+- **Device information** and **IP address** tracking
+- **Location history** for compliance and reporting
+
+### Configuration
+```json
+"CompanyLocation": {
+  "Latitude": 30.0444,
+  "Longitude": 31.2357,
+  "AllowedRadiusInMeters": 500,
+  "CompanyName": "Your Company",
+  "Address": "Company Address"
+}
+```
 
 ## 📧 Email Services
 
@@ -127,15 +180,41 @@ Profile images are stored locally in `wwwroot/Uploads/profile-images/` with conf
 
 ## 🧪 Testing
 
+### Swagger Testing Examples
+
+#### Check-in with Location:
+```json
+{
+  "checkInTime": "2024-01-15T08:30:00",
+  "latitude": 30.0444,
+  "longitude": 31.2357,
+  "deviceInfo": "iPhone 13, iOS 16.0",
+  "ipAddress": "192.168.1.100"
+}
+```
+
+#### Check-out with Location:
+```json
+{
+  "checkOutTime": "2024-01-15T17:30:00",
+  "latitude": 30.0444,
+  "longitude": 31.2357,
+  "deviceInfo": "iPhone 13, iOS 16.0", 
+  "ipAddress": "192.168.1.100"
+}
+```
+
 Use the provided `CleanArch.Api.http` file for testing API endpoints with REST Client extension.
 
 ## 🔄 Next Steps
 
 After successful setup, you can:
 1. Register a new admin user
-2. Create departments and assign users
-3. Test attendance and vacation workflows
-4. Configure additional settings as needed
+2. Configure company location coordinates
+3. Create departments and assign users
+4. Test GPS-based attendance workflows
+5. Configure location radius and policies
+6. Generate location-based attendance reports
 
 ## 📞 Support
 
@@ -144,3 +223,24 @@ For issues during setup, check:
 - .NET 9.0 SDK installation
 - SQL Server service status
 - Migration execution logs
+- Company location coordinates accuracy
+- GPS permissions for mobile applications
+
+## 🆕 What's New in Location Features
+
+### ✅ Added Features
+- **GPS-based attendance validation**
+- **Real-time location tracking**
+- **Configurable company geofence**
+- **Location audit trails**
+- **Device and IP address tracking**
+- **Enhanced security against remote abuse**
+
+### 🎯 Business Benefits
+- **Ensure physical presence** at workplace
+- **Prevent attendance fraud**
+- **Accurate location-based reporting**
+- **Flexible location policies** per branch
+- **Compliance with attendance regulations**
+
+The system now provides enterprise-grade attendance tracking with advanced GPS location validation! 🎉
