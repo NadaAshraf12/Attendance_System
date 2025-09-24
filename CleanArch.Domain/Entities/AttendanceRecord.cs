@@ -18,6 +18,16 @@ namespace CleanArch.Domain.Entities
         public AttendanceStatus Status { get; set; }
         public string? Notes { get; set; }
 
+        //Gps Coordinates
+        public double? CheckInLatitude { get; set; }
+        public double? CheckInLongitude { get; set; }
+        public double? CheckOutLatitude { get; set; }
+        public double? CheckOutLongitude { get; set; }
+        public string? CheckInDeviceInfo { get; set; }
+        public string? CheckOutDeviceInfo { get; set; }
+        public string? CheckInIpAddress { get; set; }
+        public string? CheckOutIpAddress { get; set; }
+
         // Navigation property
         public ApplicationUser User { get; set; }
     }

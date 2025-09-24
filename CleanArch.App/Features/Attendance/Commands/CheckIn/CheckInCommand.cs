@@ -1,15 +1,16 @@
-﻿using CleanArch.App.Services;
+﻿// CleanArch.App/Features/Attendance/Commands/CheckIn/CheckInCommand.cs
+using CleanArch.Common.Dtos;
+using CleanArch.App.Services;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Attendance.Commands.CheckIn
 {
     public class CheckInCommand : IRequest<ResponseModel>
     {
         public DateTime CheckInTime { get; set; } = DateTime.Now;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public string? DeviceInfo { get; set; }
+        public string? IpAddress { get; set; }
     }
 }

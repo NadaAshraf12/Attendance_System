@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CleanArch.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class initialCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,6 +55,86 @@ namespace CleanArch.Infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoleClaims_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AttendanceRecords",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CheckInTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckOutTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AttendanceRecords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Department",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ManagerId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ManagerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentDepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Department", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Department_Department_ParentDepartmentId",
+                        column: x => x.ParentDepartmentId,
+                        principalTable: "Department",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -81,6 +161,7 @@ namespace CleanArch.Infra.Migrations
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     RoleHint = table.Column<int>(type: "int", nullable: true),
+                    DepartmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -105,25 +186,41 @@ namespace CleanArch.Infra.Migrations
                         principalTable: "Cities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_Department_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Department",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleClaims",
+                name: "LeaveRequests",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LeaveType = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
+                    table.PrimaryKey("PK_LeaveRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoleClaims_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
+                        name: "FK_LeaveRequests_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -288,6 +385,48 @@ namespace CleanArch.Infra.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Vacation",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Days = table.Column<int>(type: "int", nullable: false),
+                    SubstituteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ApprovedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedBy = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vacation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vacation_Users_SubstituteId",
+                        column: x => x.SubstituteId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Vacation_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName", "RoleType" },
@@ -299,6 +438,11 @@ namespace CleanArch.Infra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AttendanceRecords_UserId",
+                table: "AttendanceRecords",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cities_CountryCode",
                 table: "Cities",
                 column: "CountryCode");
@@ -307,6 +451,27 @@ namespace CleanArch.Infra.Migrations
                 name: "IX_Cities_RegionCode",
                 table: "Cities",
                 column: "RegionCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Department_Code",
+                table: "Department",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Department_ManagerId1",
+                table: "Department",
+                column: "ManagerId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Department_ParentDepartmentId",
+                table: "Department",
+                column: "ParentDepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequests_UserId",
+                table: "LeaveRequests",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId_Token",
@@ -362,9 +527,16 @@ namespace CleanArch.Infra.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_DepartmentId",
+                table: "Users",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
-                column: "Email");
+                column: "Email",
+                unique: true,
+                filter: "[Email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_PhoneNumber",
@@ -377,11 +549,46 @@ namespace CleanArch.Infra.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vacation_SubstituteId",
+                table: "Vacation",
+                column: "SubstituteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vacation_UserId",
+                table: "Vacation",
+                column: "UserId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AttendanceRecords_Users_UserId",
+                table: "AttendanceRecords",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Department_Users_ManagerId1",
+                table: "Department",
+                column: "ManagerId1",
+                principalTable: "Users",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Department_Users_ManagerId1",
+                table: "Department");
+
+            migrationBuilder.DropTable(
+                name: "AttendanceRecords");
+
+            migrationBuilder.DropTable(
+                name: "LeaveRequests");
+
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
@@ -404,6 +611,9 @@ namespace CleanArch.Infra.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
+                name: "Vacation");
+
+            migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
@@ -411,6 +621,9 @@ namespace CleanArch.Infra.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "Department");
         }
     }
 }

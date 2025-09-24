@@ -28,8 +28,32 @@ namespace CleanArch.Infra.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CheckInDeviceInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckInIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("CheckInLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CheckInLongitude")
+                        .HasColumnType("float");
+
                     b.Property<DateTime>("CheckInTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CheckOutDeviceInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckOutIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("CheckOutLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CheckOutLongitude")
+                        .HasColumnType("float");
 
                     b.Property<DateTime?>("CheckOutTime")
                         .HasColumnType("datetime2");

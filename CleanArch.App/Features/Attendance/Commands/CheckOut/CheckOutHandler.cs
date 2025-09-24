@@ -1,8 +1,12 @@
-﻿using CleanArch.App.Interface;
+﻿// CleanArch.App/Features/Attendance/Commands/CheckOut/CheckOutHandler.cs
+using CleanArch.App.Interface;
 using CleanArch.App.Services;
+using CleanArch.Common.Dtos;
 using CleanArch.Common.Enums;
 using CleanArch.Domain.Repositories.Command;
+using CleanArch.Infra.Options;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace CleanArch.App.Features.Attendance.Commands.CheckOut
 {
@@ -11,26 +15,52 @@ namespace CleanArch.App.Features.Attendance.Commands.CheckOut
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly ILeaveRepository _leaveRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ILocationService _locationService;
+        private readonly CompanyLocationOptions _companyLocation;
 
         public CheckOutHandler(
             IAttendanceRepository attendanceRepository,
             ILeaveRepository leaveRepository,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            ILocationService locationService,
+            IOptions<CompanyLocationOptions> companyLocationOptions)
         {
             _attendanceRepository = attendanceRepository;
             _leaveRepository = leaveRepository;
             _currentUserService = currentUserService;
+            _locationService = locationService;
+            _companyLocation = companyLocationOptions.Value;
         }
 
         public async Task<ResponseModel> Handle(CheckOutCommand request, CancellationToken cancellationToken)
         {
-            // Get current user Id
             var userIdString = _currentUserService.UserId;
 
             if (!Guid.TryParse(userIdString, out var userId))
                 return ResponseModel.Fail("Invalid user id");
 
-            // Get today's attendance
+            // Validate location if provided
+            if (request.Latitude.HasValue && request.Longitude.HasValue)
+            {
+                var userLocation = new LocationDto
+                {
+                    Latitude = request.Latitude.Value,
+                    Longitude = request.Longitude.Value
+                };
+
+                var companyLocation = new LocationDto
+                {
+                    Latitude = _companyLocation.Latitude,
+                    Longitude = _companyLocation.Longitude
+                };
+
+                if (!_locationService.IsWithinRadius(userLocation, companyLocation, _companyLocation.AllowedRadiusInMeters))
+                {
+                    var distance = _locationService.CalculateDistance(userLocation, companyLocation);
+                    return ResponseModel.Fail($"You are too far from company location to check out. Distance: {distance:F0} meters");
+                }
+            }
+
             var attendance = await _attendanceRepository.GetTodayAttendanceAsync(userId, cancellationToken);
 
             if (attendance == null)
@@ -39,13 +69,15 @@ namespace CleanArch.App.Features.Attendance.Commands.CheckOut
             if (attendance.CheckOutTime != null)
                 return ResponseModel.Fail("Already checked out today");
 
-            // Set checkout time
+            // Set checkout time and location data
             attendance.CheckOutTime = request.CheckOutTime;
+            attendance.CheckOutLatitude = request.Latitude;
+            attendance.CheckOutLongitude = request.Longitude;
+            attendance.CheckOutDeviceInfo = request.DeviceInfo;
+            attendance.CheckOutIpAddress = request.IpAddress;
 
-            // احسب عدد الساعات اللي اشتغلها
             var workedHours = (attendance.CheckOutTime.Value - attendance.CheckInTime).TotalHours;
 
-            // لو أقل من 8 ساعات → لازم يكون عامل LeaveRequest وموافق عليه
             if (workedHours < 8)
             {
                 var leaveRequest = await _leaveRepository.GetApprovedLeaveForUserAsync(
@@ -62,10 +94,9 @@ namespace CleanArch.App.Features.Attendance.Commands.CheckOut
             }
             else
             {
-                attendance.Status = AttendanceStatus.Present; // اليوم خلص طبيعي
+                attendance.Status = AttendanceStatus.Present;
             }
 
-            // Save changes
             await _attendanceRepository.UpdateAsync(attendance, cancellationToken);
             await _attendanceRepository.SaveChangesAsync(cancellationToken);
 

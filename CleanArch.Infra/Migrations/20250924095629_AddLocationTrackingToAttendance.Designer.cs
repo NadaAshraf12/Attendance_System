@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanArch.Infra.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250909125259_AddSubDepartments")]
-    partial class AddSubDepartments
+    [Migration("20250924095629_AddLocationTrackingToAttendance")]
+    partial class AddLocationTrackingToAttendance
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,8 +31,32 @@ namespace CleanArch.Infra.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CheckInDeviceInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckInIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("CheckInLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CheckInLongitude")
+                        .HasColumnType("float");
+
                     b.Property<DateTime>("CheckInTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CheckOutDeviceInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CheckOutIpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("CheckOutLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CheckOutLongitude")
+                        .HasColumnType("float");
 
                     b.Property<DateTime?>("CheckOutTime")
                         .HasColumnType("datetime2");
@@ -371,6 +395,85 @@ namespace CleanArch.Infra.Migrations
                     b.ToTable("UserAddresses");
                 });
 
+            modelBuilder.Entity("CleanArch.Domain.Entities.Vacation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ApprovedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid?>("SubstituteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubstituteId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Vacation", (string)null);
+                });
+
             modelBuilder.Entity("CleanArch.Infra.Identity.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -577,7 +680,9 @@ namespace CleanArch.Infra.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.HasIndex("Email");
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -823,6 +928,24 @@ namespace CleanArch.Infra.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("CleanArch.Domain.Entities.Vacation", b =>
+                {
+                    b.HasOne("CleanArch.Infra.Identity.ApplicationUser", "Substitute")
+                        .WithMany()
+                        .HasForeignKey("SubstituteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CleanArch.Infra.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Substitute");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CleanArch.Infra.Identity.ApplicationUser", b =>
