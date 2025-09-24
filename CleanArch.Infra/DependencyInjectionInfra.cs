@@ -48,13 +48,10 @@ namespace CleanArch.Infra
             // Configure Lockout options
             services.Configure<IdentityOptions>(options =>
             {
-                // بعد كام محاولة غلط يتقفل الأكونت
                 options.Lockout.MaxFailedAccessAttempts = 2;
 
-                // المدة اللي يتقفل فيها
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
 
-                // هل يتطبق على المستخدمين الجداد ولا لأ
                 options.Lockout.AllowedForNewUsers = true;
             });
 

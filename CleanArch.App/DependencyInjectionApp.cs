@@ -19,10 +19,8 @@ namespace CleanArch.App
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, Microsoft.Extensions.Configuration.ConfigurationManager configuration)
         {
-            // MediatR Registration (v12+)
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            // ✅ Fix: use configuration instead of config
             services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 
             services.AddScoped<IJwtTokenService, JwtTokenService>();
@@ -42,7 +40,6 @@ namespace CleanArch.App
             services.AddScoped<IMapper, ServiceMapper>();
 
 
-            // Validators, Mapping ... إلخ
             return services;
         }
     }

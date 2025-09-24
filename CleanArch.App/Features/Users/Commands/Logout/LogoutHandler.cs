@@ -1,13 +1,8 @@
 ﻿using CleanArch.App.Interface;
 using CleanArch.App.Services;
 using CleanArch.Infra.Data;
-using CleanArch.Infra.Identity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Users.Commands.Logout
 {
@@ -31,7 +26,7 @@ namespace CleanArch.App.Features.Users.Commands.Logout
             if (request.AllDevices)
             {
                 var tokens = await _db.RefreshTokens
-                    .Where(t => t.UserId == userGuid && t.RevokedOn == null) // ✅ استخدم العمود
+                    .Where(t => t.UserId == userGuid && t.RevokedOn == null) 
                     .ToListAsync(ct);
 
                 foreach (var t in tokens)
@@ -50,7 +45,7 @@ namespace CleanArch.App.Features.Users.Commands.Logout
                 if (token is null || token.UserId != userGuid)
                     return ResponseModel.Fail("Invalid refresh token", 400);
 
-                if (token.RevokedOn == null) // ✅ بدل !token.IsRevoked
+                if (token.RevokedOn == null) 
                 {
                     token.RevokedOn = DateTime.UtcNow;
                     await _db.SaveChangesAsync(ct);

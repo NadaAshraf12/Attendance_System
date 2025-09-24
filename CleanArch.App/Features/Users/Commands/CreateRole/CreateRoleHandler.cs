@@ -1,10 +1,8 @@
 ﻿using CleanArch.App.Services;
-using CleanArch.Common.Dtos;
 using CleanArch.Infra.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore; // مهم عشان ToListAsync / MaxAsync
-using System.Linq;
+using Microsoft.EntityFrameworkCore; 
 
 namespace CleanArch.App.Features.Roles.Commands.CreateRole
 {
@@ -31,14 +29,13 @@ namespace CleanArch.App.Features.Roles.Commands.CreateRole
             int nextRoleValue = 0;
             if (roles.Any())
             {
-                // هنجيب أكبر رقم موجود ونزود عليه واحد
                 nextRoleValue = roles.Max(r => (int)r.RoleType) + 1;
             }
 
             var newRole = new ApplicationRole(request.RoleName)
             {
                 RoleType = (CleanArch.Domain.Enums.RoleType)nextRoleValue,
-                Description = request.Description // لو بعتها في الـ Command
+                Description = request.Description 
             };
 
             var result = await _roleManager.CreateAsync(newRole);

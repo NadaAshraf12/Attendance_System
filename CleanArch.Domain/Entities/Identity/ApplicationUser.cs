@@ -71,7 +71,6 @@ namespace CleanArch.Infra.Identity
         // Optional: quick role hint (Identity manages roles via junction table)
         public RoleType? RoleHint { get; set; }
 
-        // إضافة DepartmentId
         public Guid? DepartmentId { get; set; }
 
         // Navigation property

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System;
 
 namespace CleanArch.App.Features.Departments.Queries.GetDepartmentById
 {

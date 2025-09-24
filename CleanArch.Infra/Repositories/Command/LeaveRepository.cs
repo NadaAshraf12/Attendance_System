@@ -29,7 +29,6 @@ namespace CleanArch.Infra.Repositories
                 .ToListAsync();
         }
 
-        // ✨ الميثود اللي محتاجها الـ CheckOutHandler
         public async Task<LeaveRequest?> GetApprovedLeaveForUserAsync(
             Guid userId,
             DateTime date,

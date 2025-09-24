@@ -41,14 +41,14 @@ namespace CleanArch.Api.Controllers
         [HttpGet("departments")]
         public async Task<IActionResult> GetDepartments()
         {
-            var list = await _deptRepo.GetAllWithChildrenAsync(); // ✅ لازم تجيب الأقسام ومعاها الـ SubDepartments
+            var list = await _deptRepo.GetAllWithChildrenAsync(); 
 
             var result = list.Select(d => MapToDepartmentDto(d)).ToList();
 
             return Ok(result);
         }
 
-        // 🛠 Recursive mapper
+        
         private DepartmentDto MapToDepartmentDto(Department dept)
         {
             return new DepartmentDto

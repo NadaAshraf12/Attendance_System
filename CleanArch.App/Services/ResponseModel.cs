@@ -22,7 +22,6 @@ namespace CleanArch.App.Services
             };
         }
 
-        // ✅ Add helper methods
         public static ResponseModel Success(string message, dynamic data = null) =>
             new ResponseModel { Timestamp = DateTime.UtcNow, StatusCode = 200, IsError = false, Message = message, Result = data };
 

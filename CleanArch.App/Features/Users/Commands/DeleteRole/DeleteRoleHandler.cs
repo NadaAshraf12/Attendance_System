@@ -1,5 +1,4 @@
-﻿// Application/Features/Roles/Commands/DeleteRole/DeleteRoleHandler.cs
-using CleanArch.App.Services;
+﻿using CleanArch.App.Services;
 using CleanArch.Common.Dtos;
 using CleanArch.Infra.Identity;
 using MediatR;
@@ -25,7 +24,6 @@ namespace CleanArch.App.Features.Roles.Commands.DeleteRole
             if (role is null)
                 return ResponseModel.Fail("Role not found");
 
-            // هات كل اليوزرز اللي واخدين الـ role
             var users = await _userManager.GetUsersInRoleAsync(request.RoleName);
             foreach (var user in users)
             {
@@ -41,7 +39,6 @@ namespace CleanArch.App.Features.Roles.Commands.DeleteRole
                 }
             }
 
-            // احذف الـ role نفسه
             var result = await _roleManager.DeleteAsync(role);
             if (!result.Succeeded)
                 return ResponseModel.Fail(string.Join(", ", result.Errors.Select(e => e.Description)));

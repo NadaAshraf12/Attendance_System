@@ -18,7 +18,7 @@ namespace CleanArch.App.Features.Departments.Commands.CreateDepartment
             if (exists != null)
                 return ResponseModel.Fail("Department already exists");
 
-            // ✅ لو في Parent Department
+            // ✅ if found Parent Department
             Department? parent = null;
             if (request.ParentDepartmentId.HasValue)
             {
@@ -43,7 +43,7 @@ namespace CleanArch.App.Features.Departments.Commands.CreateDepartment
 
             await _repo.AddAsync(dept);
 
-            // ✅ Build Path (لو ليه Parent)
+            // ✅ Build Path (if found Parent)
             var deptPath = dept.Name;
             while (parent != null)
             {

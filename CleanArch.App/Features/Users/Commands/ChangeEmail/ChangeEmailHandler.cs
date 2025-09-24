@@ -3,9 +3,6 @@ using CleanArch.App.Services;
 using CleanArch.Infra.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Users.Commands.ChangeEmail
 {
@@ -22,14 +19,11 @@ namespace CleanArch.App.Features.Users.Commands.ChangeEmail
 
         public async Task<ResponseModel> Handle(ChangeEmailCommand request, CancellationToken cancellationToken)
         {
-            // البحث عن المستخدم باستخدام الإيميل الحالي
             var user = await _userManager.FindByEmailAsync(request.CurrentEmail)
                        ?? throw new KeyNotFoundException("User not found");
 
-            // إنشاء رمز التحقق لتغيير الإيميل
             var token = await _userManager.GenerateChangeEmailTokenAsync(user, request.NewEmail);
 
-            // محاولة تغيير الإيميل
             var result = await _userManager.ChangeEmailAsync(user, request.NewEmail, token);
 
             if (!result.Succeeded)

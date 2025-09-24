@@ -15,7 +15,7 @@ namespace CleanArch.App.Resources
         public JsonStringLocalizer(IDistributedCache cache)
         {
             _cache = cache;
-            _resourceName = typeof(T).Name; // عادةً "SharedResource"
+            _resourceName = typeof(T).Name; 
         }
 
         public LocalizedString this[string name]
@@ -102,7 +102,7 @@ namespace CleanArch.App.Resources
             var fileName = $"{_resourceName}.{cultureName}.json";
             var filePath = Path.Combine(_resourcesPath, fileName);
 
-            return File.Exists(filePath) ? filePath : null; // ارجع null لو مش موجود
+            return File.Exists(filePath) ? filePath : null; 
         }
     }
 }

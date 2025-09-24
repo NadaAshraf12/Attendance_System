@@ -19,24 +19,28 @@ namespace CleanArch.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services
+            // SERVICES CONFIGURATION
+
+            // Base Services
             builder.Services.AddControllers();
 
-            // Localization
+            // LOCALIZATION CONFIGURATION
+
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
 
+            // MVC with Localization
             builder.Services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization(options =>
                 {
-                    // هنا نستخدم SharedResource مش JsonStringLocalizerFactory
+                    // Using SharedResource instead of JsonStringLocalizerFactory for Data Annotations
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                         factory.Create(typeof(SharedResource));
                 });
 
-            // Supported cultures
+            // Supported Cultures Configuration
             var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("ar-EG") };
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -46,7 +50,8 @@ namespace CleanArch.Api
                 options.RequestCultureProviders.Insert(0, new AcceptLanguageHeaderRequestCultureProvider());
             });
 
-            // Swagger/OpenAPI
+            // SWAGGER/OPENAPI CONFIGURATION
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -57,6 +62,7 @@ namespace CleanArch.Api
                     Description = "Clean Architecture API"
                 });
 
+                // JWT Authentication Scheme for Swagger
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
                     BearerFormat = "JWT",
@@ -79,49 +85,66 @@ namespace CleanArch.Api
                 });
             });
 
-            // Application + Infrastructure layers
+            // APPLICATION & INFRASTRUCTURE LAYERS
+
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddApplication(builder.Configuration);
             builder.Services.AddHttpContextAccessor();
 
+            // APPLICATION BUILD & MIDDLEWARE PIPELINE
+
             var app = builder.Build();
 
-            // Middleware pipeline
+            // DEVELOPMENT ENVIRONMENT SETUP
+
             if (app.Environment.IsDevelopment())
             {
+                // Swagger UI Configuration
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "CleanArch v1");
-                    c.RoutePrefix = string.Empty;
+                    c.RoutePrefix = string.Empty;  // Set Swagger as root
                     c.DisplayRequestDuration();
                 });
             }
 
-            // Ensure Uploads folder exists
+            // FILE UPLOADS DIRECTORY SETUP
+
             var env = app.Services.GetRequiredService<IWebHostEnvironment>();
             var uploadsRoot = Path.Combine(env.WebRootPath ?? Path.Combine(env.ContentRootPath, "wwwroot"),
                 builder.Configuration.GetSection("UploadOptions:BaseFolder").Value ?? "Uploads");
             Directory.CreateDirectory(uploadsRoot);
 
-            // Forwarded headers
+            // MIDDLEWARE PIPELINE CONFIGURATION
+
+            // Forwarded Headers for Proxy Scenarios
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            // Static Files Serving
             app.UseStaticFiles();
+
+            // Custom Exception Handling
             app.UseGlobalExceptionHandling();
+
+            // Security
             app.UseHttpsRedirection();
 
-            // Localization
+            // Localization Middleware
             var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
             app.UseRequestLocalization(locOptions);
 
+            // Authentication & Authorization
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Endpoint Mapping
             app.MapControllers();
+
+            // Application Start
             app.Run();
         }
     }

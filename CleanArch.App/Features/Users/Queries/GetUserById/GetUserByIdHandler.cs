@@ -32,7 +32,6 @@ namespace CleanArch.App.Features.Users.Queries.GetUserById
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            // 🔎 نجيب القسم بالـ SubDepartments
             Department? department = null;
             if (user.DepartmentId != null)
                 department = await _departmentRepository.GetByIdWithChildrenAsync(user.DepartmentId.Value);
@@ -52,20 +51,17 @@ namespace CleanArch.App.Features.Users.Queries.GetUserById
             return _responseModel.Response(200, false, "User retrieved successfully", userDto);
         }
 
-        // 🛠 Recursive Mapper للـ DepartmentDto
-        // في GetUserByIdHandler (أو أي مكان تستخدمينه)
         private CleanArch.Common.Dtos.DepartmentDto MapToDepartmentDto(CleanArch.Domain.Entities.Department dept)
         {
-            if (dept == null) return null!; // (caller بيتأكد قبل ما ينادي عليها عموماً)
+            if (dept == null) return null!; 
 
             var dto = new CleanArch.Common.Dtos.DepartmentDto
             {
                 Id = dept.Id,
                 Name = dept.Name,
                 Code = dept.Code,
-                // SubDepartments نملأها بشكل recursive
                 SubDepartments = dept.SubDepartments?
-                    .Where(sd => !sd.IsDeleted) // تجاهل المحذوفين لو عايزة
+                    .Where(sd => !sd.IsDeleted) 
                     .Select(sd => MapToDepartmentDto(sd))
                     .ToList() ?? new List<CleanArch.Common.Dtos.DepartmentDto>()
             };

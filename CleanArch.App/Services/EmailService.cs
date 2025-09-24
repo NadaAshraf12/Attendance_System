@@ -31,7 +31,7 @@ public class EmailService : IEmailService
                 EnableSsl = true,
                 UseDefaultCredentials = false,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                Timeout = 30000 // 30 second timeout
+                Timeout = 30000 
             };
 
             var mailMessage = new MailMessage
@@ -43,7 +43,6 @@ public class EmailService : IEmailService
             };
             mailMessage.To.Add(to);
 
-            // إضافة headers مهمة
             mailMessage.Headers.Add("X-Mailer", "CleanArch App");
 
             await client.SendMailAsync(mailMessage);

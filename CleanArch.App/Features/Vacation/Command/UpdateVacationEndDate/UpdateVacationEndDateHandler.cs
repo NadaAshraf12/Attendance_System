@@ -21,14 +21,11 @@ namespace CleanArch.App.Features.Vacation.Commands.UpdateVacationEndDate
             if (vacation == null)
                 return ResponseModel.Fail("Vacation not found", 404);
 
-            // ممكن نسمح بالتعديل حتى لو Approved (علشان حالة الـ emergency اللي قلتيها)
             if (vacation.Status == Common.Enums.VacationStatus.Declined)
                 return ResponseModel.Fail("Cannot update a rejected vacation", 400);
 
-            // تعديل تاريخ النهاية
             vacation.EndDate = request.NewEndDate;
 
-            // إعادة حساب عدد الأيام
             vacation.Days = (int)(vacation.EndDate.Date - vacation.StartDate.Date).TotalDays + 1;
 
             vacation.UpdatedOn = DateTime.UtcNow;

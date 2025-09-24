@@ -36,11 +36,9 @@ namespace CleanArch.App.Features.Users.Commands.Login
 
         public async Task<ResponseModel> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            // 1️⃣ جلب المستخدم
             var user = await _userManager.FindByEmailAsync(request.Email)
                        ?? throw new KeyNotFoundException("User not found");
 
-            // 2️⃣ التحقق من كلمة السر مع lockout
             var passCheck = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
             if (passCheck.IsLockedOut)
@@ -49,11 +47,9 @@ namespace CleanArch.App.Features.Users.Commands.Login
             if (!passCheck.Succeeded)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
-            // 3️⃣ جلب IP و Device تلقائي إذا مش موجودين
             var ipAddress = request.IpAddress ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
             var device = request.Device ?? _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString();
 
-            // 4️⃣ إنشاء الـ JWT
             AuthResultDto tokens = await _jwt.CreateTokenAsync(
                 user,
                 device: device,
@@ -61,7 +57,6 @@ namespace CleanArch.App.Features.Users.Commands.Login
                 ipAddress: ipAddress,
                 cancellationToken: cancellationToken);
 
-            // 5️⃣ إعادة الاستجابة
             return _response.Response(200, false, "Login successful.", tokens);
         }
     }

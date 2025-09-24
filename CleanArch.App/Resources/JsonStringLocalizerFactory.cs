@@ -20,7 +20,6 @@ namespace CleanArch.App.Resources
 
         public IStringLocalizer Create(string baseName, string location)
         {
-            // استخدم SharedResource مباشرة
             return Create(typeof(SharedResource));
         }
     }

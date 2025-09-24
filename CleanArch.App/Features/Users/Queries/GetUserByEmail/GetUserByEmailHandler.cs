@@ -32,7 +32,6 @@ namespace CleanArch.App.Features.Users.Queries.GetUserByEmail
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            // 🔎 نجيب الديبارتمنت مع الـ Children
             var department = user.DepartmentId != null
                 ? await _departmentRepository.GetByIdWithChildrenAsync(user.DepartmentId.Value)
                 : null;
@@ -52,7 +51,6 @@ namespace CleanArch.App.Features.Users.Queries.GetUserByEmail
             return _responseModel.Response(200, false, "User retrieved successfully", userDto);
         }
 
-        // 🌀 Recursive mapping function
         private Common.Dtos.DepartmentDto MapDepartmentRecursive(CleanArch.Domain.Entities.Department dept)
         {
             return new Common.Dtos.DepartmentDto

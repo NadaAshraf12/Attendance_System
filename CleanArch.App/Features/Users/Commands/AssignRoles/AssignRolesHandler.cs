@@ -29,7 +29,6 @@ namespace CleanArch.App.Features.Users.Commands.AssignRoles
 
             var current = await _userManager.GetRolesAsync(user);
 
-            // ✅ هنا بنفلتر الـ Roles بحيث ناخد بس الموجودين فعلاً
             var validRoles = new List<string>();
             foreach (var role in request.Roles.Distinct())
             {
@@ -40,7 +39,6 @@ namespace CleanArch.App.Features.Users.Commands.AssignRoles
             if (!validRoles.Any())
                 return _response.Response(400, true, "No valid roles found to assign.", null);
 
-            // نحذف الأدوار القديمة ونضيف الجديدة
             await _userManager.RemoveFromRolesAsync(user, current);
             await _userManager.AddToRolesAsync(user, validRoles);
 

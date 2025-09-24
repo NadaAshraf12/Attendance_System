@@ -21,11 +21,9 @@ namespace CleanArch.App.Features.Vacation.Command.UpdateVacation
             if (vacation == null)
                 return ResponseModel.Fail("Vacation not found", 404);
 
-            // يمكن التعديل فقط إذا كانت في حالة pending
             if (vacation.Status != Common.Enums.VacationStatus.Pending)
                 return ResponseModel.Fail("Can only update pending vacations", 400);
 
-            // تحديث الحقول إذا كانت لها قيمة
             if (request.Type.HasValue)
                 vacation.Type = request.Type.Value;
 
@@ -41,7 +39,6 @@ namespace CleanArch.App.Features.Vacation.Command.UpdateVacation
             if (!string.IsNullOrEmpty(request.Reason))
                 vacation.Reason = request.Reason;
 
-            // إعادة حساب عدد الأيام
             if (request.StartDate.HasValue || request.EndDate.HasValue)
             {
                 vacation.Days = (int)(vacation.EndDate.Date - vacation.StartDate.Date).TotalDays + 1;
