@@ -3,10 +3,6 @@ using CleanArch.Domain.Repositories;
 using CleanArch.Infra.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Departments.Commands.Assign_User_to_Department
 {
@@ -37,7 +33,6 @@ namespace CleanArch.App.Features.Departments.Commands.Assign_User_to_Department
             if (!result.Succeeded)
                 return ResponseModel.Fail(string.Join(";", result.Errors.Select(e => e.Description)));
 
-            // هنا نكوّن مسار القسم (لو ليه Parent)
             var deptPath = dept.Name;
             var parent = dept.ParentDepartment;
             while (parent != null)

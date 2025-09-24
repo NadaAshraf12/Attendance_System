@@ -1,6 +1,4 @@
-﻿// CleanArch.App/Features/Attendance/Commands/CheckIn/CheckInCommand.cs
-using CleanArch.Common.Dtos;
-using CleanArch.App.Services;
+﻿using CleanArch.App.Services;
 using MediatR;
 
 namespace CleanArch.App.Features.Attendance.Commands.CheckIn

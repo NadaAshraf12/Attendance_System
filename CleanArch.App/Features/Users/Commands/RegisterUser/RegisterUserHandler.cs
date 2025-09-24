@@ -35,14 +35,12 @@ namespace CleanArch.App.Features.Users.Commands.RegisterUser
 
         public async Task<ResponseModel> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            // ✅ Search department (could be parent or sub)
             var department = await _departmentRepository.GetByCodeAsync(request.DepartmentCode);
             if (department == null || department.IsDeleted)
             {
                 return _response.Response(404, true, $"Department/SubDepartment with code {request.DepartmentCode} not found", null);
             }
 
-            // ✅ check if email exists
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
             {

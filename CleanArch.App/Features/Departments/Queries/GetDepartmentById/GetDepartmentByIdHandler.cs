@@ -1,10 +1,6 @@
 ﻿using CleanArch.App.Services;
-using CleanArch.App.Features.Departments;
 using CleanArch.Domain.Repositories;
 using MediatR;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Departments.Queries.GetDepartmentById
 {

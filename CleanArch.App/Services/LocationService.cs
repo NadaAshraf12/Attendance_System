@@ -1,10 +1,5 @@
 ﻿using CleanArch.App.Interface;
 using CleanArch.Common.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Services
 {
@@ -18,8 +13,7 @@ namespace CleanArch.App.Services
 
         public double CalculateDistance(LocationDto point1, LocationDto point2)
         {
-            // Haversine formula لحساب المسافة بين نقطتين على الكرة الأرضية
-            var earthRadius = 6371000; // نصف قطر الأرض بالمتر
+            var earthRadius = 6371000; 
 
             var lat1Rad = DegreesToRadians(point1.Latitude);
             var lat2Rad = DegreesToRadians(point2.Latitude);

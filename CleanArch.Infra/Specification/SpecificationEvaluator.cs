@@ -21,7 +21,6 @@ namespace CleanArch.Domain.Specifications
             else if (specification.OrderByDescending is not null)
                 query = query.OrderByDescending(specification.OrderByDescending);
 
-            // Includes with ThenInclude support
             query = specification.Includes.Aggregate(query, (current, include) => include(current));
 
             if (specification.IsPagingEnabled)

@@ -1,10 +1,7 @@
-﻿// ResetPasswordHandler.cs
-using CleanArch.App.Services;
+﻿using CleanArch.App.Services;
 using CleanArch.Infra.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Features.Users.Commands.ResetPassword
 {
@@ -23,7 +20,6 @@ namespace CleanArch.App.Features.Users.Commands.ResetPassword
             if (user == null)
                 return ResponseModel.Fail("Invalid email");
 
-            // Important: Decode the token (جاي URL encoded من الميل)
             var decodedToken = request.Token.Replace(" ", "+");
 
             var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);

@@ -1,6 +1,5 @@
 ﻿using CleanArch.App.Services;
 using CleanArch.Common.Dtos;
-using CleanArch.Common.Enums;
 using CleanArch.Domain.Repositories;
 using MediatR;
 

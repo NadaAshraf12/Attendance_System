@@ -1,8 +1,6 @@
-﻿// CleanArch.Infra/Data/DesignTimeDbContextFactory.cs
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace CleanArch.Infra.Data
 {
@@ -10,7 +8,6 @@ namespace CleanArch.Infra.Data
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            // ابحث عن appsettings.json في مشروع الـ API
             var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "CleanArch.Api");
 
             IConfiguration configuration = new ConfigurationBuilder()

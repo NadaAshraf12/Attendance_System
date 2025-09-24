@@ -12,11 +12,11 @@ namespace CleanArch.App.Features.Departments.Commands.DeleteDepartment
 
         public async Task<ResponseModel> Handle(DeleteDepartmentCommand request, CancellationToken cancellationToken)
         {
-            var department = await _repo.GetByIdWithChildrenAsync(request.Id); // 👈 مهم نجيب SubDepartments
+            var department = await _repo.GetByIdWithChildrenAsync(request.Id); 
             if (department == null)
                 return ResponseModel.Fail("Department not found");
 
-            // ✅ Cascade Soft Delete
+            
             await SoftDeleteRecursive(department);
 
             return ResponseModel.Success("Department and its sub-departments soft-deleted successfully");

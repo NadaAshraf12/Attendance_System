@@ -1,5 +1,4 @@
-﻿// CleanArch.Api/Controllers/AttendanceController.cs
-using CleanArch.App.Features.Attendance.Commands.CheckIn;
+﻿using CleanArch.App.Features.Attendance.Commands.CheckIn;
 using CleanArch.App.Features.Attendance.Commands.CheckOut;
 using CleanArch.App.Features.Attendance.Commands.LeaveApproval;
 using CleanArch.App.Features.Attendance.Commands.LeaveRequests;
@@ -13,7 +12,7 @@ namespace CleanArch.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // لازم يكون المستخدم لوج إن ومعاه JWT
+    [Authorize] 
     public class AttendanceController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -119,7 +118,7 @@ namespace CleanArch.Api.Controllers
         }
 
         [HttpPost("leave-approval")]
-        [Authorize(Roles = "Admin,Manager")] // الادمن والمانجر يقدر يوافق
+        [Authorize(Roles = "Admin,Manager")] 
         public async Task<IActionResult> LeaveApproval(
             [FromBody] LeaveApprovalCommand command,
             CancellationToken cancellationToken)
@@ -171,10 +170,6 @@ namespace CleanArch.Api.Controllers
             {
                 _logger.LogInformation("Today's attendance query by user: {UserId}",
                     User.FindFirst("sub")?.Value);
-
-                // هتحتاج تعمل Query جديد لهذا الغرض
-                // var attendance = await _mediator.Send(new GetTodayAttendanceQuery(), cancellationToken);
-                // return Ok(attendance);
 
                 return Ok(new { message = "Feature coming soon" });
             }

@@ -11,7 +11,7 @@ public class CurrentUserService : ICurrentUserService
     public CurrentUserService(IHttpContextAccessor http) => _http = http;
 
     public string? UserId => _http.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)
-                           ?? _http.HttpContext?.User?.FindFirstValue(ClaimTypes.Name) // في حال سبّيتي الـ sub/name
+                           ?? _http.HttpContext?.User?.FindFirstValue(ClaimTypes.Name) 
                            ?? _http.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
     public string? UserEmail => _http.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);

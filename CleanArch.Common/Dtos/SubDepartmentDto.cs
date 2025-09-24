@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CleanArch.Common.Dtos
 {
     public record SubDepartmentDto(
-        Guid? Id,          // null معناها جديد
+        Guid? Id,          
         string Name,
         string Code,
         string? Description,

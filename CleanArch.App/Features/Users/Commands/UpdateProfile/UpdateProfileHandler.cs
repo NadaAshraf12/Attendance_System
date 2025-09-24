@@ -13,7 +13,7 @@ public class UpdateProfileHandler : IRequestHandler<UpdateProfileCommand, Respon
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IResponseModel _response;
     private readonly IMapper _mapper;
-    private readonly IFileStorage _fileStorage; // 🟢 هنستخدمه
+    private readonly IFileStorage _fileStorage; 
 
     public UpdateProfileHandler(
         ICurrentUserService current,
@@ -49,20 +49,19 @@ public class UpdateProfileHandler : IRequestHandler<UpdateProfileCommand, Respon
         if (IsValidString(request.FullName))
             user.FullName = request.FullName!;
 
-        // 🟢 هنا هنرفع الصورة الجديدة ونحدث الرابط
         if (request.ProfilePicture is not null)
         {
             using var stream = request.ProfilePicture.OpenReadStream();
 
             var fileResource = await _fileStorage.SaveAsync(
                 stream,
-                request.ProfilePicture.FileName,       // اسم الملف الأصلي
-                "Uploads/profile-images",              // الفولدر
-                cancellationToken);                    // التوكن
+                request.ProfilePicture.FileName,       
+                "Uploads/profile-images",              
+                cancellationToken);                    
 
             if (fileResource is not null)
             {
-                user.ProfilePicture = fileResource.Url; // خزّن الرابط الناتج
+                user.ProfilePicture = fileResource.Url; 
             }
         }
 

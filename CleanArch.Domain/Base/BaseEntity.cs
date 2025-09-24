@@ -1,10 +1,5 @@
 ﻿using CleanArch.Domain.Base.BaseInterface;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.Domain.Base
 {
@@ -30,12 +25,10 @@ namespace CleanArch.Domain.Base
 
         public DateTime? DeletedOn { get; set; }
 
-        // Optional optimistic concurrency
         [Timestamp]
         public byte[]? RowVersion { get; set; }
     }
 
-    // إذا كنت تحتاج BaseEntity بدون generic parameter
     public abstract class BaseEntity : BaseEntity<Guid>
     {
     }

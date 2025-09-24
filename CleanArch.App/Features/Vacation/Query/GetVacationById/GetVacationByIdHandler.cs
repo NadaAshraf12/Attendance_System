@@ -20,7 +20,6 @@ namespace CleanArch.App.Features.Vacation.Query.GetVacationById
             if (vacation == null)
                 return ResponseModel.Fail("Vacation not found", 404);
 
-            // Fix: Pass the message as the first argument and the vacation object as the second argument
             return ResponseModel.Success("Vacation retrieved successfully", vacation);
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CleanArch.App.Features.Departments
+﻿namespace CleanArch.App.Features.Departments
 {
     public record DepartmentDto(Guid Id, string Name, string Code, bool IsActive);
 
@@ -23,6 +20,6 @@ namespace CleanArch.App.Features.Departments
         public bool IsDeleted { get; set; }
 
         public List<DepartmentUserDto> Users { get; set; } = new();
-        public List<DepartmentDetailDto> SubDepartments { get; set; } = new(); // ✅
+        public List<DepartmentDetailDto> SubDepartments { get; set; } = new(); 
     }
 }

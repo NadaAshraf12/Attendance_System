@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CleanArch.Common.Const
+﻿namespace CleanArch.Common.Const
 {
     public static class RoleSeedIds
     {

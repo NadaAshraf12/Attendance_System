@@ -56,7 +56,6 @@ namespace CleanArch.Infra.Repositories
             vacation.Status = VacationStatus.Declined;
             vacation.ApprovedById = approverId;
             vacation.UpdatedOn = DateTime.UtcNow;
-            // ممكن نخزن decline reason في عمود لو حابين
             await _context.SaveChangesAsync();
         }
 

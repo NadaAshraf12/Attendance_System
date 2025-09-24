@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Net;
 using System.Text.Json;
 
 namespace CleanArch.App.MiddleWare
@@ -24,11 +23,11 @@ namespace CleanArch.App.MiddleWare
         {
             try
             {
-                await _next(context); // كمل البايبلاين عادي
+                await _next(context); 
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex); // لو حصل Exception
+                await HandleExceptionAsync(context, ex); 
             }
         }
 
@@ -61,7 +60,6 @@ namespace CleanArch.App.MiddleWare
                     message = "Database update error";
                     break;
 
-                // ✅ Custom Example لو عايزة تزودي Exceptions خاصة بيكي
                 case ApplicationException:
                     statusCode = (int)StatusCodesEnum.BadRequest;
                     message = ex.Message;
@@ -73,7 +71,6 @@ namespace CleanArch.App.MiddleWare
                     break;
             }
 
-            // log error
             _logger.LogError(ex, $"[ERROR] {ex.Message}");
 
             var response = new ResponseModel
@@ -82,7 +79,7 @@ namespace CleanArch.App.MiddleWare
                 Timestamp = DateTime.UtcNow,
                 IsError = true,
                 Message = message,
-                Result = new { error = ex.Message } // ممكن تشيلها في production
+                Result = new { error = ex.Message } 
             };
 
             context.Response.StatusCode = statusCode;
@@ -90,7 +87,6 @@ namespace CleanArch.App.MiddleWare
         }
     }
 
-    // Extension method للتسجيل بسهولة
     public static class ExceptionHandlingMiddlewareExtensions
     {
         public static IApplicationBuilder UseGlobalExceptionHandling(this IApplicationBuilder app)

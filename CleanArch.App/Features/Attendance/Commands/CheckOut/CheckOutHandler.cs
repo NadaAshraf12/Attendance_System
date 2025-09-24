@@ -1,5 +1,4 @@
-﻿// CleanArch.App/Features/Attendance/Commands/CheckOut/CheckOutHandler.cs
-using CleanArch.App.Interface;
+﻿using CleanArch.App.Interface;
 using CleanArch.App.Services;
 using CleanArch.Common.Dtos;
 using CleanArch.Common.Enums;

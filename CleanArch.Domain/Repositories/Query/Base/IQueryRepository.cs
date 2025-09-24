@@ -1,10 +1,5 @@
 ﻿using CleanArch.Domain.Base;
 using CleanArch.Domain.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.Domain.Repositories.Query.Base
 {

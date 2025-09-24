@@ -2,11 +2,6 @@
 using CleanArch.Domain.Repositories;
 using CleanArch.Infra.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.Infra.Repositories
 {
@@ -54,19 +49,16 @@ namespace CleanArch.Infra.Repositories
             if (dept == null) return false;
             if (dept.IsDeleted) return false;
 
-            // mark soft deleted
             dept.IsDeleted = true;
             dept.IsActive = false;
             dept.DeletedAt = DateTime.UtcNow;
             dept.DeletedOn = DateTime.UtcNow;
 
-            // optional: detach users from department (set to null)
             if (dept.Users != null && dept.Users.Any())
             {
                 foreach (var user in dept.Users)
                 {
                     user.DepartmentId = null;
-                    // If ApplicationUser tracked under same context, change will be saved.
                     _context.Users.Update(user);
                 }
             }
@@ -89,7 +81,7 @@ namespace CleanArch.Infra.Repositories
         public async Task<Department?> GetByIdWithChildrenAsync(Guid id)
         {
             return await _context.Departments
-                .Include(d => d.SubDepartments) // 👈 نجيب الـ SubDepartments
+                .Include(d => d.SubDepartments) 
                 .FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
         }
 

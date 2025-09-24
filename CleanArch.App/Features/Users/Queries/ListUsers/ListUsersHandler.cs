@@ -43,7 +43,6 @@ namespace CleanArch.App.Features.Users.Queries.ListUsers
                                .Take(request.PageSize)
                                .ToListAsync(cancellationToken);
 
-            // ✅ نجيب كل الـ DepartmentIds مرة واحدة
             var deptIds = users.Where(u => u.DepartmentId.HasValue)
                                .Select(u => u.DepartmentId!.Value)
                                .Distinct()
@@ -52,7 +51,7 @@ namespace CleanArch.App.Features.Users.Queries.ListUsers
             var depts = new Dictionary<Guid, DepartmentDto>();
             if (deptIds.Any())
             {
-                var deptEntities = await _departmentRepository.GetByIdsAsync(deptIds); // لازم تعملي متود دي في الريبو
+                var deptEntities = await _departmentRepository.GetByIdsAsync(deptIds); 
                 depts = deptEntities.ToDictionary(
                     d => d.Id,
                     d => new DepartmentDto { Id = d.Id, Name = d.Name, Code = d.Code }

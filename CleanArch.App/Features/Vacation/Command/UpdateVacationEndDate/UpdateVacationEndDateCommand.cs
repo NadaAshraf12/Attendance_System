@@ -1,6 +1,5 @@
 ﻿using CleanArch.App.Services;
 using MediatR;
-using System;
 
 namespace CleanArch.App.Features.Vacation.Commands.UpdateVacationEndDate
 {

@@ -1,5 +1,4 @@
-﻿// CleanArch.App/Features/Attendance/Commands/CheckOut/CheckOutCommand.cs
-using CleanArch.App.Services;
+﻿using CleanArch.App.Services;
 using MediatR;
 
 namespace CleanArch.App.Features.Attendance.Commands.CheckOut

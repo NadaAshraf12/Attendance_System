@@ -4,12 +4,7 @@ using CleanArch.Infra.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CleanArch.App.Services.Storage
 {
@@ -38,7 +33,6 @@ namespace CleanArch.App.Services.Storage
                 throw new InvalidOperationException($"File type '{ext}' is not allowed.");
 
 
-            // Optional: الحجم لو متوفّر (لو Stream ملف، غالبًا مش هتعرف قبل ما تقراه)
             if (content is MemoryStream ms && ms.Length > _opt.MaxFileSizeMB * 1024L * 1024L)
                 throw new InvalidOperationException($"Max file size is {_opt.MaxFileSizeMB} MB.");
 
@@ -51,7 +45,6 @@ namespace CleanArch.App.Services.Storage
             var physicalPath = Path.Combine(basePhysical, safeFileName);
 
 
-            // حفظ فعلي
             using (var fs = new FileStream(physicalPath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 await content.CopyToAsync(fs, ct);
@@ -116,7 +109,7 @@ namespace CleanArch.App.Services.Storage
 
 
             var req = _http.HttpContext?.Request;
-            if (req == null) return string.Empty; // fallback: empty => relative URLs
+            if (req == null) return string.Empty; 
             var scheme = req.Scheme;
             var host = req.Host.Value;
             return $"{scheme}://{host}";

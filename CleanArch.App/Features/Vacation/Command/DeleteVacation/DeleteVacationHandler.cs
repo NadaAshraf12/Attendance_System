@@ -20,7 +20,6 @@ namespace CleanArch.App.Features.Vacation.Command.DeleteVacation
             if (vacation == null)
                 return ResponseModel.Fail("Vacation not found", 404);
 
-            // يمكن الحذف فقط إذا كانت في حالة pending
             if (vacation.Status != Common.Enums.VacationStatus.Pending)
                 return ResponseModel.Fail("Can only delete pending vacations", 400);
 
